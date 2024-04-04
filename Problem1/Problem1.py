@@ -13,7 +13,7 @@ class ChainOfPresents:
     def __init__(self):
         self.lock = threading.Lock()
         self.head = None
-        self.set = set()
+        self.set = set() # shared set to tell which tags were already processed 
 
     def add_present(self, tag):
         present = Present(tag)
@@ -32,22 +32,22 @@ class ChainOfPresents:
 
     def thankGuest(self, tag):
         if tag in self.set:
-            self.set.remove(tag) # remove it from shared set as that present is being thanked
+            self.set.remove(tag) # remove it from shared set 
             if not self.head:
-                return False
+                return 
             if self.head.tag == tag:
                 self.head = self.head.next
-                return True
+                return 
             current = self.head
+
             while current.next:
                 if current.next.tag == tag:
                     current.next = current.next.next
                     return
                 current = current.next
-            return
 
     def search(self, tag):
-        print(f'Minotaur said to search tag #{tag}')
+ 
         with self.lock:
             current = self.head
             while current:

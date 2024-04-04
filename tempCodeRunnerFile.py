@@ -1,0 +1,1 @@
+   choice = random.randint(1, 5)

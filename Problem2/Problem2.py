@@ -6,7 +6,7 @@ Time = 0
 class MarsRover:
     def __init__(self):
         self.temperatures = [[] for i in range(60)]
-        self.lock = threading.Lock()
+        self.lock = threading.Lock() # create a lock object on init 
 
     def sense_temperature(self):
         global Time
@@ -15,18 +15,18 @@ class MarsRover:
             minute = (Time // 60) % 60
             with self.lock:
                 self.temperatures[minute].append(temp)
-            Time += 1
+            Time += 1 #simulating a minute, passing a real minute is too slow
                 
     def compile_report(self):
         global Time
-        hour = (Time // 60) % 24
+        hour = (Time // 60) % 24 # get the current hour
         temps = self.temperatures[(hour - 1) % 60]
 
         highest_temps = sorted(temps, reverse=True)[:5]
         lowest_temps = sorted(temps)[:5]
 
         largest_diff = 0
-        largest_interval = 0
+        largest_interval = (0, 0) # interval tuple of the largest temperature differnce
         for i in range(len(temps) - 10):
             diff = max(temps[i:i+10]) - min(temps[i:i+10])
             if diff > largest_diff:

@@ -1,20 +1,18 @@
 import threading
 import random
 
-
 class Present:
     def __init__(self, tag):
         self.tag = tag
         self.next = None
         self.lock = threading.Lock()
 
-
 class ChainOfPresents:
     def __init__(self):
         self.lock = threading.Lock()
         self.head = None
         self.set = set() # shared set to tell which tags were already processed 
-
+    # add a present to the chain 
     def add_present(self, tag):
         present = Present(tag)
         self.set.add(tag)
@@ -29,7 +27,7 @@ class ChainOfPresents:
 
             present.next = current.next
             current.next = present
-
+    # method to thank guest by removing them from the chain 
     def thankGuest(self, tag):
         if tag in self.set:
             self.set.remove(tag) # remove it from shared set 
@@ -45,7 +43,7 @@ class ChainOfPresents:
                     current.next = current.next.next
                     return
                 current = current.next
-
+    # method to search a present in the chain by tag
     def search(self, tag):
  
         with self.lock:
@@ -56,12 +54,11 @@ class ChainOfPresents:
                     current = current.next
             
 
-
 def task(presents, chain_of_presents):
     # alternate betweeen adding and thankign the guest with minotaur requesting a search 
     alternate = True
     for present in presents:
-        choice = random.randint(1, 5)
+        choice = random.randint(1, 5) # minotaur may decide any servant to search a present
 
         if choice == 1:
             chain_of_presents.search(present)
@@ -72,7 +69,6 @@ def task(presents, chain_of_presents):
             chain_of_presents.thankGuest(present)
             alternate = True
 
-
 def main():
     num_presents = 500000
     chain_of_presents = ChainOfPresents()
@@ -80,7 +76,6 @@ def main():
     threads = []
     unordered_presents = random.sample(
         range(1, num_presents + 1), num_presents)
-
 
     for i in range(servants):
         start_idx = i * (len(unordered_presents) // servants)
@@ -90,9 +85,9 @@ def main():
             servant_presents, chain_of_presents))
         threads.append(thread)
         thread.start()
+
     for thread in threads:
         thread.join()
-
    
     if chain_of_presents.head is None:
         print("All thank yous have been written")
@@ -103,7 +98,6 @@ def main():
             count += 1
             current = current.next
         print(f'There are {count} guests not thanked')
-
 
 if __name__ == "__main__":
     main()
